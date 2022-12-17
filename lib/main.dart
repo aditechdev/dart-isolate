@@ -39,23 +39,31 @@ class Person {
         age = json["age"] as int;
 }
 
-// Interence Function
-Future<Iterable<Person>> getPerson() async {
-  final rp = ReceivePort(); // read and write tunnel
-  await Isolate.spawn(_getPerson, rp.sendPort);
-  return await rp.first;
+Stream<String> getMessage() {
+  final rp = ReceivePort();
+  return Isolate.spawn(_getMessage, rp.sendPort)
+      .asStream()
+      .asyncExpand((_) => rp)
+      .takeWhile((element) => element is String)
+      .cast();
 }
 
-void _getPerson(SendPort sp) async {
-  const url = "http://127.0.0.1:5500/apis/people1.json";
-  final persons = await HttpClient()
-      .getUrl(Uri.parse(url))
-      .then((req) => req.close())
-      .then((response) => response.transform(utf8.decoder).join())
-      .then((jsonString) => json.decode(jsonString) as List<dynamic>)
-      .then((json) => json.map((e) => Person.fromJson(e)));
+void _getMessage(SendPort sp) async {
+  await for (final now in Stream.periodic(
+    const Duration(seconds: 1),
+    (_) => DateTime.now().toIso8601String(),
+  ).take(10)) {
+    sp.send(now);
+  }
 
-  Isolate.exit(sp, persons);
+  Isolate.exit(sp);
+  //  ;
+}
+
+void testIt() async {
+  await for (final msg in getMessage()) {
+    msg.log();
+  }
 }
 
 class Home extends StatelessWidget {
@@ -66,9 +74,8 @@ class Home extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: TextButton(
-          onPressed: () async {
-            final person = await getPerson();
-            person.log();
+          onPressed: () {
+            testIt();
           },
           child: const Text(
             "Press Me",
