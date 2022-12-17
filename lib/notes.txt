@@ -11,3 +11,8 @@ Start -> loop -> Exit
 In order to achieve 60 fps, it should be light and doesnot work heavily
 
 It will cause jerkiness, if there is too much of work
+
+Worker isolate: heavily task should assigned to worker Isolates, should be offladed to background worker. It will do some work in background and come with the result.
+
+Every isolate, upon finishing its work send back to owner.
+
