@@ -1,0 +1,9 @@
+Isolates
+
+Isolates are non shared memory thread in non parallel
+
+Each Isolates has its own memory pool and a single thread that has an event loop
+
+It has enterance and main event loop like socket.io
+
+Start -> loop -> Exit
