@@ -7,3 +7,7 @@ Each Isolates has its own memory pool and a single thread that has an event loop
 It has enterance and main event loop like socket.io
 
 Start -> loop -> Exit
+
+In order to achieve 60 fps, it should be light and doesnot work heavily
+
+It will cause jerkiness, if there is too much of work
